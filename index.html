@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personnel Potential Analysis Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --apple-blue: #007AFF;
+            --apple-gray: #8E8E93;
+            --apple-light-gray: #F2F2F7;
+            --apple-dark: #1D1D1F;
+            --apple-secondary: #86868B;
+            --apple-border: #D1D1D6;
+            --apple-success: #34C759;
+            --apple-warning: #FF9500;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(180deg, #F5F5F7 0%, #FFFFFF 100%);
+            min-height: 100vh;
+            color: var(--apple-dark);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--apple-dark);
+            margin-bottom: 8px;
+        }
+
+        .header .subtitle {
+            color: var(--apple-secondary);
+            font-size: 1rem;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Instructions Screen */
+        .instructions-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--apple-blue) 0%, #5856D6 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2.5rem;
+        }
+
+        .instructions-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .instructions-list {
+            list-style: none;
+            margin-bottom: 32px;
+            counter-reset: instruction;
+        }
+
+        .instructions-list li {
+            counter-increment: instruction;
+            padding: 12px 0;
+            padding-left: 40px;
+            position: relative;
+            color: var(--apple-dark);
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--apple-light-gray);
+            line-height: 1.5;
+        }
+
+        .instructions-list li:last-child {
+            border-bottom: none;
+        }
+
+        .instructions-list li::before {
+            content: counter(instruction);
+            position: absolute;
+            left: 0;
+            width: 28px;
+            height: 28px;
+            background: var(--apple-light-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--apple-secondary);
+        }
+
+        .answer-key {
+            background: var(--apple-light-gray);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 32px;
+        }
+
+        .answer-key h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--apple-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .key-items {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .key-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .key-symbol {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .key-symbol.plus { background: #E8F5E9; color: var(--apple-success); }
+        .key-symbol.equal { background: #FFF3E0; color: var(--apple-warning); }
+        .key-symbol.minus { background: #FFEBEE; color: #FF3B30; }
+
+        .key-label {
+            font-size: 0.8rem;
+            color: var(--apple-secondary);
+            text-align: center;
+        }
+
+        /* Form Styles */
+        .form-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--apple-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-group label .required {
+            color: #FF3B30;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 16px;
+            border: 1.5px solid var(--apple-border);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: #FAFAFA;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+        }
+
+        .form-group.error input {
+            border-color: #FF3B30;
+        }
+
+        .error-text {
+            color: #FF3B30;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-group.error .error-text {
+            display: block;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 32px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--apple-secondary);
+        }
+
+        .progress-number {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--apple-blue);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--apple-light-gray);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--apple-blue) 0%, #5856D6 100%);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        /* Question Screen */
+        .question-number {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--apple-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 40px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 20px 24px;
+            border: 2px solid var(--apple-border);
+            border-radius: 16px;
+            background: #FAFAFA;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-family: inherit;
+        }
+
+        .option-btn:hover {
+            border-color: var(--apple-blue);
+            background: rgba(0, 122, 255, 0.03);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected.plus {
+            border-color: var(--apple-success);
+            background: rgba(52, 199, 89, 0.1);
+        }
+
+        .option-btn.selected.equal {
+            border-color: var(--apple-warning);
+            background: rgba(255, 149, 0, 0.1);
+        }
+
+        .option-btn.selected.minus {
+            border-color: #FF3B30;
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .option-symbol {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .option-btn.plus .option-symbol {
+            background: #E8F5E9;
+            color: var(--apple-success);
+        }
+
+        .option-btn.equal .option-symbol {
+            background: #FFF3E0;
+            color: var(--apple-warning);
+        }
+
+        .option-btn.minus .option-symbol {
+            background: #FFEBEE;
+            color: #FF3B30;
+        }
+
+        .option-text {
+            text-align: left;
+        }
+
+        .option-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--apple-dark);
+        }
+
+        .option-desc {
+            font-size: 0.85rem;
+            color: var(--apple-secondary);
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--apple-blue) 0%, #5856D6 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: var(--apple-gray);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: var(--apple-light-gray);
+            color: var(--apple-dark);
+        }
+
+        .btn-secondary:hover {
+            background: var(--apple-border);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Dashboard */
+        .dashboard-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--apple-success) 0%, #30D158 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2.5rem;
+        }
+
+        .dashboard-title {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .dashboard-subtitle {
+            text-align: center;
+            color: var(--apple-secondary);
+            margin-bottom: 32px;
+        }
+
+        .info-card {
+            background: var(--apple-light-gray);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .info-card h3 {
+            font-size: 0.85rem;
+            color: var(--apple-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--apple-secondary);
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .answers-card {
+            background: var(--apple-light-gray);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .answers-card h3 {
+            font-size: 0.85rem;
+            color: var(--apple-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .answers-display {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 2;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .answers-display .q { color: var(--apple-secondary); }
+        .answers-display .plus { color: var(--apple-success); font-weight: 700; }
+        .answers-display .equal { color: var(--apple-warning); font-weight: 700; }
+        .answers-display .minus { color: #FF3B30; font-weight: 700; }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-download {
+            background: var(--apple-dark);
+            color: white;
+        }
+
+        .btn-download:hover {
+            opacity: 0.9;
+        }
+
+        /* Keyboard hint */
+        .keyboard-hint {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--apple-gray);
+            margin-top: 16px;
+        }
+
+        .keyboard-hint kbd {
+            background: var(--apple-light-gray);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: inherit;
+            margin: 0 2px;
+        }
+
+        @media (max-width: 500px) {
+            .container { padding: 20px 16px; }
+            .card { padding: 24px 20px; }
+            .question-text { font-size: 1.2rem; }
+            .header h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Personnel Potential Analysis Test</h1>
+            <p class="subtitle">Comprehensive Personality Assessment</p>
+        </div>
+
+        <!-- Screen 1: Instructions -->
+        <div class="screen active" id="screen-instructions">
+            <div class="card">
+                <div class="instructions-icon">📋</div>
+                <h2 class="instructions-title">Important Instructions</h2>
+                <p style="color: var(--apple-secondary); margin-bottom: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8rem; text-align: center;">
+                    DO NOT PROCEED UNTIL YOU HAVE READ THESE DIRECTIONS
+                </p>
+
+                <ol class="instructions-list">
+                    <li>Do not mark on this booklet in any way. Indicate your answers on the separate answer sheet provided.</li>
+                    <li>Make sure you understand each question: read it as many times as necessary. Please answer every question. You can give your opinion if you are uncertain about the answers.</li>
+                    <li>Do not stay too long with one question. Answer it as soon as you understand it and go on to the next question.</li>
+                    <li>When an answer would be different if one considered the past rather than the present, answer as of the present.</li>
+                    <li>On the answer sheet you have the choice of three columns in which to mark your answer. <strong>+</strong> means mostly yes or decidedly so. <strong>=</strong> means uncertain, maybe, neither definitely yes or no. <strong>−</strong> means mostly no or decidedly no.</li>
+                    <li>Your answer to the question is indicated by making a heavy mark in the rectangle opposite the number of the question in the column which will show your answer.</li>
+                    <li>Any comments you may care to make may be written on the reverse side of the answer sheet.</li>
+                    <li>You may decline to answer this test or any question on this test on the grounds of personal privacy. Your declining to answer any question will not adversely affect your prospects in any screening, hiring, management, or administrative decision made by this company.</li>
+                    <li>Enter your name, address, etc., in the spaces provided on the answer sheet, and proceed to indicate your answers to the questions as per the instructions above.</li>
+                </ol>
+
+                <div class="answer-key">
+                    <h3>Response Options</h3>
+                    <div class="key-items">
+                        <div class="key-item">
+                            <div class="key-symbol plus">+</div>
+                            <span class="key-label">Mostly Yes<br>Decidedly So</span>
+                        </div>
+                        <div class="key-item">
+                            <div class="key-symbol equal">=</div>
+                            <span class="key-label">Uncertain<br>Maybe</span>
+                        </div>
+                        <div class="key-item">
+                            <div class="key-symbol minus">−</div>
+                            <span class="key-label">Mostly No<br>Decidedly No</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-full" onclick="showScreen('screen-info')">
+                    Get Started
+                </button>
+            </div>
+        </div>
+
+        <!-- Screen 2: Personal Information -->
+        <div class="screen" id="screen-info">
+            <div class="card">
+                <h2 class="form-title">Your Information</h2>
+
+                <div class="form-group" id="fg-firstName">
+                    <label>First Name <span class="required">*</span></label>
+                    <input type="text" id="firstName" placeholder="Enter your first name">
+                    <span class="error-text">Please enter your first name</span>
+                </div>
+
+                <div class="form-group" id="fg-lastName">
+                    <label>Last Name <span class="required">*</span></label>
+                    <input type="text" id="lastName" placeholder="Enter your last name">
+                    <span class="error-text">Please enter your last name</span>
+                </div>
+
+                <div class="form-group" id="fg-age">
+                    <label>Age <span class="required">*</span></label>
+                    <input type="number" id="age" placeholder="Enter your age" min="18" max="100">
+                    <span class="error-text">Please enter a valid age (18-100)</span>
+                </div>
+
+                <div class="form-group" id="fg-email">
+                    <label>Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" placeholder="Enter your email address">
+                    <span class="error-text">Please enter a valid email address</span>
+                </div>
+
+                <div class="form-group" id="fg-phone">
+                    <label>Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="phone" placeholder="Enter your phone number">
+                    <span class="error-text">Please enter your phone number</span>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="showScreen('screen-instructions')">Back</button>
+                    <button class="btn btn-primary" onclick="validateAndStart()">Begin Test</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Questions -->
+        <div class="screen" id="screen-questions">
+            <div class="card">
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span class="progress-text">Progress</span>
+                        <span class="progress-number" id="progress-text">1 of 200</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="question-number" id="question-number">Question 1</div>
+                <div class="question-text" id="question-text"></div>
+
+                <div class="options-container">
+                    <button class="option-btn plus" onclick="selectAnswer('+')">
+                        <div class="option-symbol">+</div>
+                        <div class="option-text">
+                            <div class="option-title">Mostly Yes</div>
+                            <div class="option-desc">Decidedly so</div>
+                        </div>
+                    </button>
+                    <button class="option-btn equal" onclick="selectAnswer('=')">
+                        <div class="option-symbol">=</div>
+                        <div class="option-text">
+                            <div class="option-title">Uncertain</div>
+                            <div class="option-desc">Maybe, not sure</div>
+                        </div>
+                    </button>
+                    <button class="option-btn minus" onclick="selectAnswer('-')">
+                        <div class="option-symbol">−</div>
+                        <div class="option-text">
+                            <div class="option-title">Mostly No</div>
+                            <div class="option-desc">Decidedly not</div>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" id="btn-prev" onclick="prevQuestion()">Previous</button>
+                    <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()">Next</button>
+                </div>
+
+                <div class="keyboard-hint">
+                    Press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> for answers, <kbd>←</kbd> <kbd>→</kbd> to navigate
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 4: Dashboard -->
+        <div class="screen" id="screen-dashboard">
+            <div class="card">
+                <div class="dashboard-icon">✓</div>
+                <h2 class="dashboard-title">Assessment Complete</h2>
+                <p class="dashboard-subtitle">Thank you for completing the test</p>
+                <p id="submit-status" style="text-align: center; margin-bottom: 24px; font-size: 0.9rem;"></p>
+
+                <div class="info-card">
+                    <h3>Respondent Information</h3>
+                    <div id="respondent-info"></div>
+                </div>
+
+                <div class="answers-card">
+                    <h3>Response Summary</h3>
+                    <div class="answers-display" id="answers-display"></div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-download btn-full" onclick="downloadResults()">
+                        Download Results
+                    </button>
+                    <button class="btn btn-secondary btn-full" onclick="resetTest()">
+                        Start New Assessment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            "Do you make thoughtless remarks or accusations which later you regret?",
+            "When others are getting rattled, do you remain fairly composed?",
+            "Do you browse through railway timetables, directories, or dictionaries just for pleasure?",
+            "When asked to make a decision, would you be swayed by your like or dislike of the personality involved?",
+            "Would the idea of hurting someone's feelings prevent you from taking up a job issue with them?",
+            "Do you find yourself distracted at work when there is no logical reason for it?",
+            "Would you prefer to be in a position where you did not have the responsibilities of making decisions?",
+            "Are your actions considered unpredictable by other people?",
+            "Are you normally considerate in your demands on your employees, co-workers or trainees?",
+            "Do other people interest you very much?",
+            "Is your voice monotonous, rather than varied in pitch?",
+            "Do you normally let the other person start the conversation?",
+            "Are you readily interested in other people's conversations?",
+            "If a co-worker wronged you and then made it up to you, could you trust him again?",
+            "Are you often impulsive in your behavior?",
+            "Do you speak slowly?",
+            "Are you usually concerned about your safety in the workplace?",
+            "Do unexpected actions sometimes bother you?",
+            "If your company were merging with another, would you be sympathetic toward those affected by cutbacks?",
+            "Do you consider that you could give a valid 'snap judgment'?",
+            "Do your past failures still worry you?",
+            "Do you find yourself being extra productive in your work for periods lasting days?",
+            "Do you resent the efforts of others to tell you what to do?",
+            "Is it normally hard for you to 'own up and take the blame'?",
+            "Do you have a small circle of close friends, rather than a large number of friends, speaking acquaintances?",
+            "Are you constantly struggling to keep up with your work load?",
+            "Do you often sing or whistle just for the fun of it?",
+            "Would you prefer to be part of a smaller group rather than a large group?",
+            "Would you rather give orders than take them?",
+            "Do you enjoy telling people the latest scandal about your associates?",
+            "Could you agree to 'strict discipline'?",
+            "Would the idea of making a complete new start cause you much concern?",
+            "Do you make efforts to get others to laugh and smile?",
+            "Do you find it easy to express your emotions?",
+            "Do you refrain from complaining when the other person is late for an appointment?",
+            "Are you sometimes considered to have trouble getting into the spirit of things at work?",
+            "Do you consider most people will cooperate with you?",
+            "Would you admit you were wrong to 'keep the peace'?",
+            "Are you considered warm hearted by your colleagues?",
+            "Are you rarely happy with your work unless you have a special reason?",
+            "Do you circulate around at conventions, conferences, seminars or meetings?",
+            "Do you take reasonable precaution to prevent accidents?",
+            "Does the idea of talking in front of people make you nervous?",
+            "If you saw an article in a shop obviously mistakenly marked lower than its correct price, would you try to get it at that price?",
+            "Do you often feel that people are looking at you or talking about you behind your back?",
+            "Are you 'always getting into trouble'?",
+            "Do you consider there are co-workers who are unfriendly towards you and who work against you?",
+            "Do you prefer to be an onlooker rather than participate in activities?",
+            "Do you find it easy to be impartial?",
+            "Would you lash out at a subordinate if they made a mistake that irritated you?",
+            "Can you 'start the ball rolling' at a meeting or conference?",
+            "Would you borrow from a co-worker with the hope that you can keep up the payments?",
+            "Does it take you a while to calm down after dealing with a tense work situation?",
+            "Do you consider the good of all concerned rather than your own personal advantages?",
+            "When hearing a lecturer, do you sometimes experience the idea that the speaker is referring entirely to you?",
+            "Does 'external noise' rarely interfere with your concentration?",
+            "Are you usually 'up-to-date' on everyday affairs?",
+            "Can you confidently plan and work towards carrying out an event in six months time?",
+            "Do you generally find that actions of your associates are genuine?",
+            "Do you tend to be careless?",
+            "Do you ever feel that you are working without a purpose?",
+            "Do you speedily recover from setbacks in your work?",
+            "When you criticize, do you at the same time try to encourage?",
+            "Are you normally considered 'cold'?",
+            "Are your opinions insufficiently important to tell other people?",
+            "Are you so self-assured that it sometimes annoys others?",
+            "Do you keep 'close contact' on articles of yours which you have loaned to colleagues or associates?",
+            "Do you enjoy activities of your own choosing?",
+            "Do you have only a few people whom you really appreciate?",
+            "Do you completely condemn a person because he is a rival or opponent in some aspect of your relations with him?",
+            "Do you ponder about or linger over what your career could have been?",
+            "Are you perturbed at the idea of loss of dignity in the workplace?",
+            "Are you always collecting things which 'might be useful'?",
+            "Would you criticize faults and point out the bad points on someone else's character or handiwork?",
+            "Does a gung ho group of co-workers inspire you?",
+            "Do you sometimes give away articles which strictly speaking do not belong to you?",
+            "Do you greet people effusively?",
+            "Do you often ponder on previous misfortunes with your work experiences?",
+            "Are you sometimes considered forceful in your actions or opinions?",
+            "Do you accept criticism easily and without resentment?",
+            "Do you ever find yourself somehow detached or confused about your work?",
+            "Are you likely to be jealous of a co-worker who received a promotion?",
+            "Do you tend to put off doing things and then discover it is too late?",
+            "Do you prefer to abide by the wishes of others rather than seek to have your own way?",
+            "Do you find it easy to get yourself started on a project?",
+            "Do you bite your fingernails or chew the end of your pencil?",
+            "Do you 'turn up the volume' of your emotions just to create an effect?",
+            "Do other people sometimes find it difficult to talk to you?",
+            "Are there things in your company that irritate you?",
+            "Do you have few interests and activities that are your own choice?",
+            "Are you usually undisturbed by 'noises off' when you are trying to work?",
+            "Do you consider yourself a slow worker?",
+            "Can you be a stabilizing influence when others get panicky?",
+            "Would you stop and find out whether a person needed help even though they had not directly asked you for it?",
+            "Are you prejudiced in favor of your own company, school, college, club or team, etc.?",
+            "Do you keep your promises and agreements when possible?",
+            "Do you ever get disturbed by the noise of the wind or a 'building settling down'?",
+            "Are you wary of people who ask to borrow money from you?",
+            "Do you prefer to take a passive role in any club or organization to which you belong?",
+            "Are you logical and scientific in your thinking?",
+            "Does the youth of today have more opportunity than that of a generation ago?",
+            "Do you throw things away only to discover that you need them later?",
+            "Would you give up easily on a given course if it were causing you a considerable amount of inconvenience?",
+            "Can you be openly appreciative?",
+            "Do you rarely suspect the business practices of others?",
+            "Do you sometimes wonder if anyone is concerned about your well-being at work?",
+            "Do you turn down responsibility because you doubt your fitness to cope?",
+            "Do you sometimes feel compelled to repeat some interesting item or tidbit?",
+            "Do you tend to exaggerate a justifiable grievance?",
+            "Is your facial expression varied rather than set?",
+            "Do you usually need to justify or back up an opinion once stated?",
+            "Do you openly and sincerely admire beauty in other people?",
+            "Would it take a definite effort on your part to consider quitting a long time relationship?",
+            "Would you consider yourself energetic in your attitude toward life?",
+            "Would a disagreement affect your general relationship with another person?",
+            "Does a minor failure on your part rarely trouble you?",
+            "Do you sometimes feel that you talk too much at work?",
+            "Do you smile much?",
+            "Are you easily pleased?",
+            "When met with direct opposition would you still seek to have your own way rather than give in?",
+            "Provided the distance were not too great, would you still prefer to ride rather than walk?",
+            "When talking with others are you aware of habitual physical mannerisms such as pulling your hair, nose, ears or such like?",
+            "Is your opinion influenced by looking at things from the standpoint of your experiences, occupation or training?",
+            "Do you often make tactless blunders?",
+            "Should a person be entitled to rights and privileges simply because he or she is the firstborn child?",
+            "Are your decisions swayed by personal interests?",
+            "Can you get quite enthusiastic over 'some simple little thing'?",
+            "Do you frequently take action even though you know your own good judgment would indicate otherwise?",
+            "When making a decision, do you play favorites rather than studying the issues or people involved?",
+            "Do some noises on the job or in the work place 'set your teeth on edge'?",
+            "Can you quickly adapt and make use of new conditions and situations even though they may be difficult?",
+            "Would you be irritated by children in the work place?",
+            "Can you see the other fellow's point of view when you wish to?",
+            "Do you go to bed when you want to, rather than 'by the clock'?",
+            "Do the 'petty foibles' of others make you impatient?",
+            "Does your work often seem overwhelming to you?",
+            "Are you less talkative than your associates?",
+            "Do you usually carry out assignments promptly and systematically?",
+            "Would you assist a fellow traveler rather than leave it to the officials?",
+            "If you were asked to elect a manager would you vote for the one who liked you the most rather than studying each person's job production record?",
+            "Do you frequently dwell on past failures and bad experiences in your work?",
+            "Do you get very ill at ease in disordered surroundings?",
+            "Do you usually criticize a film or show that you see or a book that you read?",
+            "When recounting some amusing incident can you easily imitate the mannerisms or the dialect in the original incident?",
+            "In subjects about which you are not expert, are your own ideas of sufficient importance as to tell others?",
+            "Do you have a tendency to tidy up a disorder of somebody else's area?",
+            "Can you accept defeat easily without the necessity of 'swallowing your disappointment'?",
+            "Does your work often seem more than you can handle?",
+            "Do you 'wax enthusiastic' about only a few projects?",
+            "Do you get frustrated at not being able to do something rather than finding a substitute activity or system?",
+            "Are you sometimes completely unable to enter the spirit of things?",
+            "Do you rarely express your grievances?",
+            "Do you work in 'spurts,' being relatively unproductive and then extremely productive for a day or two?",
+            "Does the number of uncompleted jobs you have on hand bother you?",
+            "Do people enjoy being in your company?",
+            "Could you allow someone to finish those 'final two words' in a crossword puzzle without interfering?",
+            "Do you consider the best points of most people and only rarely speak slightingly of them?",
+            "Do you laugh or smile quite readily?",
+            "In dealing with others are you definite and emphatic in voice and manner?",
+            "Are you rarely effusive?",
+            "Are your interests and fields of knowledge so important as to give little time for anything else?",
+            "Would you like to 'start a new activity' in the area in which you live?",
+            "Would you make the necessary actions to kill an animal in order to put it out of pain?",
+            "Is it easy for you to relax?",
+            "Do you have little regret on past misfortunes and failures?",
+            "Does the idea of a situation you fear most in work make you react?",
+            "Can you trust the decision of your judgment in an emotional situation in which you are involved?",
+            "Could someone else consider that you were really productive?",
+            "Do you find it hard to get started on a task that needs to be done?",
+            "Are you ever ill at ease around your colleagues?",
+            "Do you spend much time on needless worries?",
+            "In a disagreement do you find it hard to understand how the other person fails to see your side, and thus agree with you?",
+            "Do you cope with everyday problems on the job quite well?",
+            "Are you usually truthful to others?",
+            "Would you rather 'wait for something to happen' as opposed to you causing it?",
+            "Do you waste more time than you have time to waste?",
+            "Can you take a 'calculated risk' without too much worry?",
+            "If you were involved in a slight car accident, would you really take the trouble to see that any damage you did was made good?",
+            "Do others push you around?",
+            "Do you make allowances for your friends where with others you might judge more severely?",
+            "Do you often ponder over your own inferiorities in your skills or relations with co-workers?",
+            "Do your co-workers criticize you to others?",
+            "Are you embarrassed by a hearty greeting, if done in public?",
+            "Do you frequently not do something you want to do because of other people's desires?",
+            "Are you sometimes convinced of the correctness of your opinions about a subject even though you are not an expert?",
+            "Do you often find yourself 'going off in all directions at once'?",
+            "Do your acquaintances seem to think more of your abilities than you do?",
+            "Does the idea of having to deal with a critically injured co-worker abhor you?",
+            "Having settled an argument out do you continue to feel disgruntled for a while?",
+            "Are you friendly in voice, attitude, and expression?",
+            "Does your work environment seem vague or detached to you?",
+            "Do you often feel upset about the misfortunes of inept workers?",
+            "Do 'mere acquaintances' appeal to you for aid or advice in their personal difficulties?",
+            "If you lose an article, do you get the idea that 'someone must have stolen or mislaid it'?",
+            "If you thought that someone was suspicious of you and your actions, would you tackle them on the subject rather than leaving them to work it out?",
+            "Do you sometimes feel that your job skills and training work against you?",
+            "Do you have periods or times of being unhappy at work for no apparent reason?",
+            "Do you do much grumbling about conditions you have to face in life?",
+            "Do you tend to hide your feelings?",
+            "Do you consider you have many warm friends?"
+        ];
+
+        let currentQuestion = 0;
+        let answers = {};
+        let userInfo = {};
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function validateAndStart() {
+            const fields = ['firstName', 'lastName', 'age', 'email', 'phone'];
+            let valid = true;
+
+            fields.forEach(field => {
+                const input = document.getElementById(field);
+                const group = document.getElementById('fg-' + field);
+                const value = input.value.trim();
+
+                group.classList.remove('error');
+
+                if (!value) {
+                    group.classList.add('error');
+                    valid = false;
+                } else if (field === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    group.classList.add('error');
+                    valid = false;
+                } else if (field === 'age' && (parseInt(value) < 18 || parseInt(value) > 100)) {
+                    group.classList.add('error');
+                    valid = false;
+                }
+            });
+
+            if (valid) {
+                userInfo = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    age: document.getElementById('age').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value
+                };
+                showScreen('screen-questions');
+                displayQuestion();
+            }
+        }
+
+        function displayQuestion() {
+            document.getElementById('question-number').textContent = `Question ${currentQuestion + 1}`;
+            document.getElementById('question-text').textContent = questions[currentQuestion];
+            document.getElementById('progress-text').textContent = `${currentQuestion + 1} of ${questions.length}`;
+            document.getElementById('progress-fill').style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+
+            // Update buttons
+            document.getElementById('btn-prev').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+            document.getElementById('btn-next').textContent = currentQuestion === questions.length - 1 ? 'Finish' : 'Next';
+
+            // Highlight selected answer
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            const currentAnswer = answers[currentQuestion + 1];
+            if (currentAnswer) {
+                if (currentAnswer === '+') document.querySelector('.option-btn.plus').classList.add('selected');
+                else if (currentAnswer === '=') document.querySelector('.option-btn.equal').classList.add('selected');
+                else if (currentAnswer === '-') document.querySelector('.option-btn.minus').classList.add('selected');
+                document.getElementById('btn-next').disabled = false;
+            } else {
+                document.getElementById('btn-next').disabled = true;
+            }
+        }
+
+        function selectAnswer(answer) {
+            answers[currentQuestion + 1] = answer;
+
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            if (answer === '+') document.querySelector('.option-btn.plus').classList.add('selected');
+            else if (answer === '=') document.querySelector('.option-btn.equal').classList.add('selected');
+            else if (answer === '-') document.querySelector('.option-btn.minus').classList.add('selected');
+
+            // Enable Next button
+            document.getElementById('btn-next').disabled = false;
+
+            // Auto-advance after short delay
+            setTimeout(() => {
+                if (currentQuestion < questions.length - 1) {
+                    nextQuestion();
+                }
+            }, 300);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            } else {
+                showDashboard();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        // ========== GOOGLE SHEETS CONFIGURATION ==========
+        // Replace this URL with your Google Apps Script Web App URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwA6JcIPyro9N0GXholxkZtbvUQWHyRapjgGmgK2GHi0LoEHPYVPVQlqMXGLx39ocnjCA/exec';
+        // ==================================================
+
+        function showDashboard() {
+            showScreen('screen-dashboard');
+
+            // Display respondent info
+            const infoHtml = `
+                <div class="info-row"><span class="info-label">Name</span><span class="info-value">${userInfo.firstName} ${userInfo.lastName}</span></div>
+                <div class="info-row"><span class="info-label">Age</span><span class="info-value">${userInfo.age}</span></div>
+                <div class="info-row"><span class="info-label">Email</span><span class="info-value">${userInfo.email}</span></div>
+                <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${userInfo.phone}</span></div>
+                <div class="info-row"><span class="info-label">Date</span><span class="info-value">${new Date().toLocaleDateString()}</span></div>
+                <div class="info-row"><span class="info-label">Answered</span><span class="info-value">${Object.keys(answers).length} of ${questions.length}</span></div>
+            `;
+            document.getElementById('respondent-info').innerHTML = infoHtml;
+
+            // Display answers
+            let answersHtml = '';
+            for (let i = 1; i <= questions.length; i++) {
+                const ans = answers[i] || '?';
+                let cssClass = ans === '+' ? 'plus' : ans === '=' ? 'equal' : ans === '-' ? 'minus' : '';
+                answersHtml += `<span class="q">${i}</span> <span class="${cssClass}">${ans}</span> `;
+                if (i % 10 === 0) answersHtml += '<br>';
+            }
+            document.getElementById('answers-display').innerHTML = answersHtml;
+
+            // Automatically submit to Google Sheets
+            submitToGoogleSheets();
+        }
+
+        function submitToGoogleSheets() {
+            const statusEl = document.getElementById('submit-status');
+
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
+                statusEl.innerHTML = '<span style="color: var(--apple-warning);">⚠️ Google Sheets not configured</span>';
+                return;
+            }
+
+            statusEl.innerHTML = '<span style="color: var(--apple-blue);">Saving results...</span>';
+
+            // Build answers string
+            let answersString = '';
+            for (let i = 1; i <= questions.length; i++) {
+                answersString += (answers[i] || '?');
+                if (i < questions.length) answersString += ' ';
+            }
+
+            const data = {
+                timestamp: new Date().toISOString(),
+                firstName: userInfo.firstName,
+                lastName: userInfo.lastName,
+                age: userInfo.age,
+                email: userInfo.email,
+                phone: userInfo.phone,
+                answersString: answersString,
+                answersCount: Object.keys(answers).length,
+                totalQuestions: questions.length
+            };
+
+            // Add individual answers as separate fields for easier analysis
+            for (let i = 1; i <= questions.length; i++) {
+                data['q' + i] = answers[i] || '';
+            }
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                statusEl.innerHTML = '<span style="color: var(--apple-success);">✓ Results saved successfully</span>';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                statusEl.innerHTML = '<span style="color: #FF3B30;">Failed to save. Please download results manually.</span>';
+            });
+        }
+
+        function downloadResults() {
+            let content = `PERSONNEL POTENTIAL ANALYSIS TEST RESULTS\n`;
+            content += `==========================================\n\n`;
+            content += `RESPONDENT INFORMATION\n`;
+            content += `----------------------\n`;
+            content += `Name: ${userInfo.firstName} ${userInfo.lastName}\n`;
+            content += `Age: ${userInfo.age}\n`;
+            content += `Email: ${userInfo.email}\n`;
+            content += `Phone: ${userInfo.phone}\n`;
+            content += `Date Completed: ${new Date().toLocaleDateString()}\n`;
+            content += `Questions Answered: ${Object.keys(answers).length} of ${questions.length}\n\n`;
+            content += `RESPONSE TABLE\n`;
+            content += `--------------\n`;
+
+            for (let i = 1; i <= questions.length; i++) {
+                const ans = answers[i] || '?';
+                content += `${i} ${ans}`;
+                if (i % 10 === 0) content += '\n';
+                else content += ' ';
+            }
+
+            content += `\n\nKEY: + = Mostly Yes | = = Uncertain | - = Mostly No\n`;
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `PPAT_Results_${userInfo.lastName}_${userInfo.firstName}_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function resetTest() {
+            if (confirm('Start a new assessment? All current responses will be cleared.')) {
+                currentQuestion = 0;
+                answers = {};
+                userInfo = {};
+                document.querySelectorAll('input').forEach(i => i.value = '');
+                document.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
+                showScreen('screen-instructions');
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('screen-questions').classList.contains('active')) {
+                if (e.key === '1') selectAnswer('+');
+                else if (e.key === '2') selectAnswer('=');
+                else if (e.key === '3') selectAnswer('-');
+                else if (e.key === 'ArrowRight') nextQuestion();
+                else if (e.key === 'ArrowLeft') prevQuestion();
+            }
+        });
+    </script>
+</body>
+</html>
